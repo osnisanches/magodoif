@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { LEVEL_SLOTS, SLOTS } from "@/lib/game/engine";
 import type { CloudWord } from "@/lib/game/types";
 import { cn } from "@/lib/utils";
 
@@ -86,8 +85,6 @@ export function WordCloud({ words, levelSelect, disabled, onDrop, dropZoneRef }:
     }
   };
 
-  const slots = levelSelect ? LEVEL_SLOTS : SLOTS;
-
   return (
     <div className="pointer-events-none absolute inset-x-0 bottom-0 z-30 h-full">
       <div
@@ -99,13 +96,12 @@ export function WordCloud({ words, levelSelect, disabled, onDrop, dropZoneRef }:
       <div className="word-cloud-field absolute left-[20%] right-[20%] top-16 bottom-[35%] sm:top-20">
         {words.map((word, i) => {
         if (gone.has(word.instanceId)) return null;
-        const slot = slots[word.slot] ?? slots[i % slots.length];
         const dragging = drag?.id === word.instanceId;
         return (
           <div
             key={word.instanceId}
             className="word-cloud-item absolute"
-            data-slot={word.slot < slots.length ? word.slot : i % slots.length}
+            data-slot={word.slot}
             style={
               dragging && drag
                 ? {
