@@ -64,7 +64,7 @@ export function GameShell() {
       }}
     >
       <img
-        src="/game/bg.jpg"
+        src={`${import.meta.env.BASE_URL}game/bg.jpg`}
         alt=""
         className="absolute inset-0 h-full w-full object-cover"
         draggable={false}
@@ -114,7 +114,7 @@ export function GameShell() {
 
       {phase !== "title" && (
         <img
-          src="/game/logo.png"
+          src={`${import.meta.env.BASE_URL}game/logo.png`}
           alt="Selo do canal"
           className="pointer-events-none absolute bottom-20 right-20 z-50 h-32 w-auto max-w-[8rem] object-contain sm:h-36 sm:max-w-[9rem]"
           draggable={false}

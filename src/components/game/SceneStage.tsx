@@ -17,7 +17,7 @@ export function SceneStage({ axis, burst, brewing, dropZoneRef }: Props) {
       <div className="absolute bottom-0 right-0 z-10 h-full w-[34%] sm:w-[28%]">
         <div className="absolute top-0 right-0 h-[53%] w-auto origin-top-right scale-[2.8] sm:h-[55%]">
           <img
-            src="/game/wizard.png"
+            src={`${import.meta.env.BASE_URL}game/wizard.png`}
             alt=""
             className="wizard-idle h-full w-auto max-w-none object-contain"
             draggable={false}
@@ -37,7 +37,7 @@ export function SceneStage({ axis, burst, brewing, dropZoneRef }: Props) {
             style={{ background: glow, opacity: 0.55, animation: "pulse-glow 2.4s ease-in-out infinite" }}
           />
           <img
-            src="/game/cauldron.png"
+            src={`${import.meta.env.BASE_URL}game/cauldron.png`}
             alt="Caldeirão"
             className={cn(
               "cauldron-idle absolute left-1/2 top-0 h-full w-auto max-w-none -translate-x-1/2 object-contain",
