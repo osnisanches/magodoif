@@ -1,0 +1,10 @@
+node_modules/
+.vercel/
+.tauri-dist/
+.vite/
+.git/
+.DS_Store
+Thumbs.db
+screenshots/
+artifacts/
+*.log

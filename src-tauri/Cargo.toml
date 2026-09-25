@@ -1,0 +1,19 @@
+[package]
+name = "mago-das-vocacoes"
+version = "0.1.0"
+description = "O Mago das Vocacoes"
+authors = ["IFPA Campus Braganca"]
+edition = "2021"
+
+[lib]
+name = "mago_das_vocacoes_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = [] }
+
+[features]
+custom-protocol = ["tauri/custom-protocol"]

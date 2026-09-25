@@ -1,0 +1,195 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "@fontsource/cinzel/500.css";
+@import "@fontsource/cinzel/600.css";
+@import "@fontsource/cinzel/700.css";
+@import "@fontsource/outfit/400.css";
+@import "@fontsource/outfit/500.css";
+@import "@fontsource/outfit/600.css";
+@import "@fontsource/outfit/700.css";
+
+@theme {
+  --color-bg: #0c0714;
+  --color-surface: #1a1028;
+  --color-surface-2: #241834;
+  --color-fg: #f4ead8;
+  --color-muted: #c4b199;
+  --color-subtle: #8d7a66;
+  --color-primary: #d4af37;
+  --color-primary-fg: #1a1204;
+  --color-border: color-mix(in oklab, #f4ead8 14%, transparent);
+  --color-axis-tech: #5eead4;
+  --color-axis-agro: #86efac;
+  --color-axis-pesca: #67e8f9;
+  --color-axis-ambiente: #6ee7b7;
+  --color-axis-turismo: #fbbf24;
+  --color-axis-naturais: #c4b5fd;
+  --color-axis-humanas: #fdba74;
+  --font-sans: "Outfit", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Cinzel", ui-serif, Georgia, serif;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 18px;
+  --radius-xl: 28px;
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+@layer base {
+  html,
+  body,
+  #app {
+    height: 100%;
+  }
+
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    background: var(--color-bg);
+    color: var(--color-fg);
+  }
+
+  body {
+    font-family: var(--font-sans);
+    background: var(--color-bg);
+    color: var(--color-fg);
+    overscroll-behavior: none;
+  }
+
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+
+  h1,
+  h2,
+  h3 {
+    text-wrap: balance;
+    font-family: var(--font-display);
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+}
+
+.font-display {
+  font-family: var(--font-display);
+}
+
+@keyframes float-chip {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+  50% {
+    transform: translate3d(6px, -10px, 0);
+  }
+}
+
+@keyframes smoke-in {
+  from {
+    opacity: 0;
+    filter: blur(10px);
+    transform: translate3d(0, 12px, 0) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    filter: blur(0);
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+@keyframes wizard-idle {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) rotate(-0.6deg);
+  }
+  50% {
+    transform: translate3d(0, -10px, 0) rotate(0.8deg);
+  }
+}
+
+@keyframes cauldron-breathe {
+  0%,
+  100% {
+    transform: translate3d(-50%, 0, 0) scale(1);
+    filter: saturate(1);
+  }
+  50% {
+    transform: translate3d(-50%, -4px, 0) scale(1.03);
+    filter: saturate(1.15);
+  }
+}
+
+@keyframes cauldron-react {
+  0% {
+    transform: scale(1);
+  }
+  45% {
+    transform: scale(1.10);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes potion-swirl {
+  0% {
+    transform: rotate(0deg) scale(0.4);
+    opacity: 0.2;
+  }
+  70% {
+    opacity: 1;
+  }
+  100% {
+    transform: rotate(280deg) scale(8);
+    opacity: 0;
+  }
+}
+
+@keyframes pulse-glow {
+  0%,
+  100% {
+    opacity: 0.45;
+  }
+  50% {
+    opacity: 0.9;
+  }
+}
+
+.chip-float {
+  animation: float-chip 4.6s ease-in-out infinite;
+}
+
+.chip-enter {
+  animation: smoke-in 0.55s var(--ease-out) both;
+}
+
+.chip-enter.chip-float {
+  animation:
+    smoke-in 0.55s var(--ease-out) both,
+    float-chip 4.6s ease-in-out 0.55s infinite;
+}
+
+.wizard-idle {
+  animation: wizard-idle 4.2s ease-in-out infinite;
+}
+
+.cauldron-idle {
+  animation: cauldron-breathe 2.8s ease-in-out infinite;
+}
+
+.cauldron-react {
+  animation: cauldron-react 0.35s var(--ease-out);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .chip-float,
+  .chip-enter,
+  .chip-enter.chip-float,
+  .wizard-idle,
+  .cauldron-idle,
+  .cauldron-react {
+    animation: none;
+  }
+}

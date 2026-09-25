@@ -1,0 +1,32 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "O Mago das Vocacoes",
+  "version": "0.1.0",
+  "identifier": "br.ifpa.campusbraganca.magodasvocacoes",
+  "build": {
+    "beforeDevCommand": "npm run dev",
+    "devUrl": "http://localhost:8080",
+    "beforeBuildCommand": "npm run desktop:build:web",
+    "frontendDist": "../.tauri-dist"
+  },
+  "app": {
+    "windows": [
+      {
+        "label": "main",
+        "title": "O Mago das Vocacoes",
+        "width": 1280,
+        "height": 800,
+        "minWidth": 960,
+        "minHeight": 640,
+        "resizable": true
+      }
+    ],
+    "security": {
+      "csp": null
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": "all"
+  }
+}
