@@ -1,4 +1,4 @@
-import { StrictMode, useState } from "react";
+import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { AdminPanel } from "@/components/admin/AdminPanel";
 import { GameShell } from "@/components/game/GameShell";
@@ -11,12 +11,14 @@ if (!root) {
 }
 
 function DesktopApp() {
-  const [showAdmin, setShowAdmin] = useState(false);
+  const basePath = import.meta.env.BASE_URL.replace(/\/$/, "");
+  const teamPath = `${basePath}/equipe`;
+  const isTeamPage = window.location.pathname.replace(/\/$/, "") === teamPath;
 
-  return showAdmin ? (
-    <AdminPanel onBack={() => setShowAdmin(false)} />
+  return isTeamPage ? (
+    <AdminPanel onBack={() => window.location.assign(`${basePath}/`)} />
   ) : (
-    <GameShell onOpenAdmin={() => setShowAdmin(true)} />
+    <GameShell showAdminLink={false} />
   );
 }
 

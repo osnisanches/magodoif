@@ -10,10 +10,10 @@ import { TitleScreen } from "./TitleScreen";
 import { WordCloud } from "./WordCloud";
 
 interface Props {
-  onOpenAdmin?: () => void;
+  showAdminLink?: boolean;
 }
 
-export function GameShell({ onOpenAdmin }: Props) {
+export function GameShell({ showAdminLink = true }: Props) {
   const dropZoneRef = useRef<HTMLDivElement>(null);
   const phase = useGame((s) => s.phase);
   const cloud = useGame((s) => s.cloud);
@@ -29,6 +29,7 @@ export function GameShell({ onOpenAdmin }: Props) {
   const dropWord = useGame((s) => s.dropWord);
   const undo = useGame((s) => s.undo);
   const cycle = useGame((s) => s.cycle);
+  const refreshWords = useGame((s) => s.refreshWords);
   const finishBrew = useGame((s) => s.finishBrew);
   const restart = useGame((s) => s.restart);
   const setMuted = useGame((s) => s.setMuted);
@@ -97,6 +98,7 @@ export function GameShell({ onOpenAdmin }: Props) {
           canUndo={ingredients.length > 0 && phase !== "brewing"}
           muted={muted}
           onUndo={undo}
+          onRefresh={refreshWords}
           onMute={onMute}
         />
       )}
@@ -110,7 +112,7 @@ export function GameShell({ onOpenAdmin }: Props) {
         </header>
       )}
 
-      {phase === "title" && <TitleScreen onStart={onStart} onOpenAdmin={onOpenAdmin} />}
+      {phase === "title" && <TitleScreen onStart={onStart} showAdminLink={showAdminLink} />}
       {phase === "brewing" && <PotionFinale onDone={finishBrew} />}
       {phase === "result" && result && (
         <ResultScreen result={result} ingredients={ingredients} onRestart={restart} />

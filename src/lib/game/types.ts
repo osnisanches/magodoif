@@ -17,6 +17,7 @@ export interface Course {
   axis: AxisId;
   blurb: string;
   highlights: string[];
+  enabled?: boolean;
 }
 
 export interface Keyword {
@@ -68,8 +69,10 @@ export interface GameResult {
 
 export const STORAGE_KEY = "mago-vocacoes-v1";
 export const STORAGE_VERSION = 1;
+export const COURSES_STORAGE_KEY = "mago-vocacoes-courses-v1";
 
 export interface PersistedCatalog {
   version: number;
   keywords: Keyword[];
+  courses?: Course[];
 }

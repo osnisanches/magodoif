@@ -4,10 +4,10 @@ import { Button } from "@/components/ui/button";
 
 interface Props {
   onStart: () => void;
-  onOpenAdmin?: () => void;
+  showAdminLink?: boolean;
 }
 
-export function TitleScreen({ onStart, onOpenAdmin }: Props) {
+export function TitleScreen({ onStart, showAdminLink = true }: Props) {
   return (
     <div className="absolute inset-0 z-50 flex flex-col items-center overflow-y-auto bg-bg/60 px-5 pb-8 pt-[max(1.25rem,env(safe-area-inset-top))] text-center backdrop-blur-[3px]">
       <div className="my-auto flex w-full max-w-2xl flex-col items-center py-4">
@@ -42,15 +42,7 @@ export function TitleScreen({ onStart, onOpenAdmin }: Props) {
           Começar o ritual
         </Button>
 
-        {onOpenAdmin ? (
-          <button
-            type="button"
-            onClick={onOpenAdmin}
-            className="mt-5 text-xs text-subtle underline-offset-4 hover:text-muted hover:underline"
-          >
-            Painel da equipe
-          </button>
-        ) : (
+        {showAdminLink && (
           <Link
             to="/admin"
             className="mt-5 text-xs text-subtle underline-offset-4 hover:text-muted hover:underline"

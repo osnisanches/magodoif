@@ -1,4 +1,4 @@
-import { Undo2, Volume2, VolumeX } from "lucide-react";
+import { FlaskConical, Undo2, Volume2, VolumeX } from "lucide-react";
 import { MAX_INGREDIENTS } from "@/lib/game/engine";
 import { AXIS_META, levelLabel } from "@/lib/game/catalog";
 import type { Ingredient, LevelId } from "@/lib/game/types";
@@ -12,10 +12,11 @@ interface Props {
   canUndo: boolean;
   muted: boolean;
   onUndo: () => void;
+  onRefresh: () => void;
   onMute: () => void;
 }
 
-export function Hud({ count, ingredients, level, canUndo, muted, onUndo, onMute }: Props) {
+export function Hud({ count, ingredients, level, canUndo, muted, onUndo, onRefresh, onMute }: Props) {
   return (
     <footer className="absolute inset-x-0 bottom-0 z-40 px-3 pb-[max(0.6rem,env(safe-area-inset-bottom))] pt-1 sm:px-5">
       <div className="mx-auto flex max-w-5xl items-center gap-3 rounded-xl border border-border bg-bg/80 px-3 py-2 backdrop-blur-md sm:px-4">
@@ -56,6 +57,20 @@ export function Hud({ count, ingredients, level, canUndo, muted, onUndo, onMute 
             })}
           </div>
         </div>
+
+        {level && (
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            className="shrink-0 text-primary hover:bg-primary/15"
+            aria-label="Novas palavras"
+            title="Sortear outro grupo de palavras"
+            onClick={onRefresh}
+          >
+            <FlaskConical />
+          </Button>
+        )}
 
         <Button type="button" variant="ghost" size="icon" aria-label={muted ? "Ativar som" : "Silenciar"} onClick={onMute}>
           {muted ? <VolumeX /> : <Volume2 />}

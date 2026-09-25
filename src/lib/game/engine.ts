@@ -33,17 +33,21 @@ function nid(prefix: string) {
   return `${prefix}-${seq}-${Math.random().toString(36).slice(2, 7)}`;
 }
 
-export function emptyScores(): Scores {
+export function emptyScores(courses: Course[] = COURSES): Scores {
   const points: Record<string, number> = {};
   const direct: Record<string, number> = {};
-  for (const c of COURSES) {
+  for (const c of courses) {
     points[c.id] = 0;
     direct[c.id] = 0;
   }
   return { points, direct };
 }
 
-export function applyIngredient(scores: Scores, ingredient: Ingredient): Scores {
+export function applyIngredient(
+  scores: Scores,
+  ingredient: Ingredient,
+  courses: Course[] = COURSES,
+): Scores {
   if (ingredient.kind === "level" || !ingredient.ownerCourseId || !ingredient.axis) {
     return scores;
   }
@@ -52,7 +56,7 @@ export function applyIngredient(scores: Scores, ingredient: Ingredient): Scores 
   const owner = ingredient.ownerCourseId;
   points[owner] = (points[owner] ?? 0) + 2;
   direct[owner] = (direct[owner] ?? 0) + 1;
-  for (const course of COURSES) {
+  for (const course of courses) {
     if (course.axis === ingredient.axis && course.id !== owner) {
       points[course.id] = (points[course.id] ?? 0) + 1;
     }
@@ -60,7 +64,11 @@ export function applyIngredient(scores: Scores, ingredient: Ingredient): Scores 
   return { points, direct };
 }
 
-export function revertIngredient(scores: Scores, ingredient: Ingredient): Scores {
+export function revertIngredient(
+  scores: Scores,
+  ingredient: Ingredient,
+  courses: Course[] = COURSES,
+): Scores {
   if (ingredient.kind === "level" || !ingredient.ownerCourseId || !ingredient.axis) {
     return scores;
   }
@@ -69,7 +77,7 @@ export function revertIngredient(scores: Scores, ingredient: Ingredient): Scores
   const owner = ingredient.ownerCourseId;
   points[owner] = Math.max(0, (points[owner] ?? 0) - 2);
   direct[owner] = Math.max(0, (direct[owner] ?? 0) - 1);
-  for (const course of COURSES) {
+  for (const course of courses) {
     if (course.axis === ingredient.axis && course.id !== owner) {
       points[course.id] = Math.max(0, (points[course.id] ?? 0) - 1);
     }
@@ -77,8 +85,12 @@ export function revertIngredient(scores: Scores, ingredient: Ingredient): Scores
   return { points, direct };
 }
 
-export function computeResult(level: LevelId, scores: Scores): GameResult | null {
-  const pool = COURSES.filter((c) => c.level === level);
+export function computeResult(
+  level: LevelId,
+  scores: Scores,
+  courses: Course[] = COURSES,
+): GameResult | null {
+  const pool = courses.filter((c) => c.enabled !== false && c.level === level);
   if (pool.length === 0) return null;
   const ranked = [...pool].sort((a, b) => {
     const pa = scores.points[a.id] ?? 0;
@@ -100,12 +112,16 @@ export function computeResult(level: LevelId, scores: Scores): GameResult | null
   };
 }
 
-function levelCourseIds(level: LevelId): Set<string> {
-  return new Set(COURSES.filter((c) => c.level === level).map((c) => c.id));
+function levelCourseIds(level: LevelId, courses: Course[] = COURSES): Set<string> {
+  return new Set(courses.filter((c) => c.enabled !== false && c.level === level).map((c) => c.id));
 }
 
-export function keywordsForLevel(keywords: Keyword[], level: LevelId): Keyword[] {
-  const ids = levelCourseIds(level);
+export function keywordsForLevel(
+  keywords: Keyword[],
+  level: LevelId,
+  courses: Course[] = COURSES,
+): Keyword[] {
+  const ids = levelCourseIds(level, courses);
   return keywords.filter((k) => k.enabled && ids.has(k.ownerCourseId));
 }
 
@@ -186,9 +202,10 @@ export function makeAffinityCloud(
   keywords: Keyword[],
   level: LevelId,
   exclude: Set<string>,
+  courses: Course[] = COURSES,
   now = Date.now(),
 ): CloudWord[] {
-  const pool = keywordsForLevel(keywords, level).filter((k) => !exclude.has(k.id));
+  const pool = keywordsForLevel(keywords, level, courses).filter((k) => !exclude.has(k.id));
   const picked = pickDiverse(pool, Math.min(MAX_CLOUD, Math.max(6, pool.length)));
   return rebalance(picked.map((k, i) => toCloudWord(k, i, now)));
 }
@@ -199,8 +216,9 @@ export function relatedKeywords(
   level: LevelId,
   exclude: Set<string>,
   count = 3,
+  courses: Course[] = COURSES,
 ): Keyword[] {
-  const pool = keywordsForLevel(keywords, level).filter(
+  const pool = keywordsForLevel(keywords, level, courses).filter(
     (k) => !exclude.has(k.id) && k.id !== dropped.keywordId,
   );
   const sameCourse = shuffle(pool.filter((k) => k.ownerCourseId === dropped.ownerCourseId));
@@ -226,10 +244,11 @@ export function injectRelated(
   keywords: Keyword[],
   level: LevelId,
   exclude: Set<string>,
+  courses: Course[] = COURSES,
   now = Date.now(),
 ): CloudWord[] {
   const next = cloud.filter((w) => w.instanceId !== dropped.instanceId);
-  const related = relatedKeywords(dropped, keywords, level, exclude, 3);
+  const related = relatedKeywords(dropped, keywords, level, exclude, 3, courses);
   const slots = freeSlots(next);
   const injected = related.map((k, i) => toCloudWord(k, slots[i] ?? i % MAX_CLOUD, now));
   let merged = [...next, ...injected];
@@ -248,6 +267,7 @@ export function cycleCloud(
   keywords: Keyword[],
   level: LevelId,
   exclude: Set<string>,
+  courses: Course[] = COURSES,
   now = Date.now(),
   staleMs = 9000,
 ): CloudWord[] {
@@ -255,7 +275,7 @@ export function cycleCloud(
   const stale = cloud.filter((w) => now - w.bornAt >= staleMs);
   if (stale.length === 0) return cloud;
   const victim = stale[0];
-  const pool = keywordsForLevel(keywords, level).filter(
+  const pool = keywordsForLevel(keywords, level, courses).filter(
     (k) => !exclude.has(k.id) && !cloud.some((w) => w.keywordId === k.id),
   );
   if (pool.length === 0) return cloud;

@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { AXIS_META } from "./catalog";
+import { AXIS_META, COURSES } from "./catalog";
 import {
   applyIngredient,
   computeResult,
@@ -12,14 +12,15 @@ import {
   MAX_INGREDIENTS,
   revertIngredient,
 } from "./engine";
-import { loadKeywords, saveKeywords } from "./persist";
-import type { AxisId, CloudWord, GameResult, Ingredient, Keyword, LevelId, Scores } from "./types";
+import { loadCourses, loadKeywords, saveCourses, saveKeywords } from "./persist";
+import type { AxisId, CloudWord, Course, GameResult, Ingredient, Keyword, LevelId, Scores } from "./types";
 import { playDrop, playReveal, playUndo, playWhoosh } from "./audio";
 
 export type Phase = "title" | "playing" | "brewing" | "result";
 
 interface GameState {
   phase: Phase;
+  courses: Course[];
   keywords: Keyword[];
   selectedLevel: LevelId | null;
   ingredients: Ingredient[];
@@ -36,9 +37,11 @@ interface GameState {
   dropWord: (word: CloudWord) => boolean;
   undo: () => void;
   cycle: () => void;
+  refreshWords: () => void;
   finishBrew: () => void;
   restart: () => void;
   setKeywords: (keywords: Keyword[]) => void;
+  setCourses: (courses: Course[]) => void;
   setMuted: (muted: boolean) => void;
 }
 
@@ -48,10 +51,11 @@ function usedSet(used: string[], cloud: CloudWord[]) {
 
 export const useGame = create<GameState>((set, get) => ({
   phase: "title",
+  courses: COURSES,
   keywords: [],
   selectedLevel: null,
   ingredients: [],
-  scores: emptyScores(),
+  scores: emptyScores(COURSES),
   cloud: [],
   used: [],
   cauldronAxis: "gold",
@@ -63,7 +67,7 @@ export const useGame = create<GameState>((set, get) => ({
   hydrate: () => {
     const reduced =
       typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    set({ keywords: loadKeywords(), reducedMotion: reduced });
+    set({ keywords: loadKeywords(), courses: loadCourses(COURSES), reducedMotion: reduced });
   },
 
   start: () => {
@@ -71,7 +75,7 @@ export const useGame = create<GameState>((set, get) => ({
       phase: "playing",
       selectedLevel: null,
       ingredients: [],
-      scores: emptyScores(),
+      scores: emptyScores(get().courses),
       cloud: makeLevelCloud(),
       used: [],
       cauldronAxis: "gold",
@@ -88,7 +92,7 @@ export const useGame = create<GameState>((set, get) => ({
 
     if (word.kind === "level" && word.level) {
       const used = [word.keywordId];
-      const cloud = makeAffinityCloud(state.keywords, word.level, new Set(used));
+      const cloud = makeAffinityCloud(state.keywords, word.level, new Set(used), state.courses);
       playDrop(0);
       set({
         selectedLevel: word.level,
@@ -105,10 +109,17 @@ export const useGame = create<GameState>((set, get) => ({
 
     const ingredient = ingredientFromCloud(word);
     const ingredients = [...state.ingredients, ingredient];
-    const scores = applyIngredient(state.scores, ingredient);
+    const scores = applyIngredient(state.scores, ingredient, state.courses);
     const used = [...state.used, word.keywordId];
     const exclude = usedSet(used, state.cloud.filter((w) => w.instanceId !== word.instanceId));
-    const cloud = injectRelated(state.cloud, word, state.keywords, state.selectedLevel, exclude);
+    const cloud = injectRelated(
+      state.cloud,
+      word,
+      state.keywords,
+      state.selectedLevel,
+      exclude,
+      state.courses,
+    );
     const axis = (word.axis ?? "gold") as AxisId | "gold";
     const complete = ingredients.length >= MAX_INGREDIENTS;
 
@@ -147,10 +158,10 @@ export const useGame = create<GameState>((set, get) => ({
       return;
     }
 
-    const scores = revertIngredient(state.scores, last);
+    const scores = revertIngredient(state.scores, last, state.courses);
     const used = state.used.filter((id) => id !== last.keywordId);
     const level = state.selectedLevel!;
-    const cloud = makeAffinityCloud(state.keywords, level, new Set(used));
+    const cloud = makeAffinityCloud(state.keywords, level, new Set(used), state.courses);
     set({
       phase: "playing",
       ingredients,
@@ -166,8 +177,16 @@ export const useGame = create<GameState>((set, get) => ({
     const state = get();
     if (state.phase !== "playing" || !state.selectedLevel) return;
     const exclude = usedSet(state.used, state.cloud);
-    const cloud = cycleCloud(state.cloud, state.keywords, state.selectedLevel, exclude);
+    const cloud = cycleCloud(state.cloud, state.keywords, state.selectedLevel, exclude, state.courses);
     if (cloud !== state.cloud) set({ cloud });
+  },
+
+  refreshWords: () => {
+    const state = get();
+    if (state.phase !== "playing" || !state.selectedLevel) return;
+    const exclude = usedSet(state.used, state.cloud);
+    const cloud = makeAffinityCloud(state.keywords, state.selectedLevel, exclude, state.courses);
+    if (cloud.length > 0) set({ cloud });
   },
 
   finishBrew: () => {
@@ -175,7 +194,7 @@ export const useGame = create<GameState>((set, get) => ({
     if (!state.selectedLevel) return;
     playWhoosh();
     playReveal();
-    const result = computeResult(state.selectedLevel, state.scores);
+    const result = computeResult(state.selectedLevel, state.scores, state.courses);
     set({ phase: "result", result });
   },
 
@@ -186,6 +205,14 @@ export const useGame = create<GameState>((set, get) => ({
   setKeywords: (keywords) => {
     saveKeywords(keywords);
     set({ keywords });
+  },
+
+  setCourses: (courses) => {
+    const courseIds = new Set(courses.map((course) => course.id));
+    const keywords = get().keywords.filter((keyword) => courseIds.has(keyword.ownerCourseId));
+    saveCourses(courses);
+    saveKeywords(keywords);
+    set({ courses, keywords });
   },
 
   setMuted: (muted) => set({ muted }),

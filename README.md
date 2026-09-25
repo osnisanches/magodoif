@@ -21,7 +21,9 @@ http://localhost:8080
 
 ## Ajustar palavras por curso
 
-Na tela inicial, abra **Painel da equipe** para cadastrar, ativar, desativar ou remover palavras e associá-las a um curso. Os ajustes ficam salvos no navegador atual; use **Exportar** e **Importar** para transferi-los entre navegadores.
+O painel de edição fica em [https://osnisanches.github.io/magodoif/equipe/](https://osnisanches.github.io/magodoif/equipe/). Ali é possível cadastrar palavras, criar, ocultar, exibir e remover cursos. Os ajustes ficam salvos apenas no navegador atual; use **Exportar** e **Importar** para transferi-los entre navegadores.
+
+O endereço separado evita acesso acidental pelo jogo, mas não é uma barreira de segurança: o GitHub Pages publica arquivos estáticos e não consegue restringir quem edita os dados locais.
 
 ## Como fazer deploy no GitHub Pages
 
