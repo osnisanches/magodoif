@@ -76,6 +76,81 @@
   font-family: var(--font-display);
 }
 
+.word-cloud-item {
+  left: var(--slot-x);
+  top: var(--slot-y);
+  transform: translate(-50%, -50%);
+  width: max-content;
+}
+
+.wizard-portrait {
+  transform: scale(2.8);
+  transform-origin: top right;
+}
+
+.word-cloud-item[data-slot="0"] { --slot-x: 16%; --slot-y: 16%; }
+.word-cloud-item[data-slot="1"] { --slot-x: 50%; --slot-y: 10%; }
+.word-cloud-item[data-slot="2"] { --slot-x: 84%; --slot-y: 18%; }
+.word-cloud-item[data-slot="3"] { --slot-x: 28%; --slot-y: 44%; }
+.word-cloud-item[data-slot="4"] { --slot-x: 72%; --slot-y: 42%; }
+.word-cloud-item[data-slot="5"] { --slot-x: 50%; --slot-y: 64%; }
+
+@media (max-width: 639px) and (orientation: portrait) {
+  .wizard-position {
+    left: 0;
+    right: 0;
+    width: 100%;
+  }
+
+  .wizard-portrait {
+    top: 1%;
+    left: 50%;
+    right: auto;
+    height: 88%;
+    max-width: 100vw;
+    scale: 1;
+    transform: translateX(-50%) scale(1);
+    transform-origin: top center;
+  }
+
+  .wizard-portrait img {
+    max-width: 100vw;
+    object-position: top center;
+  }
+
+  .word-cloud-field {
+    left: 3%;
+    right: 3%;
+    top: 35%;
+    bottom: 32%;
+  }
+
+  .word-cloud-item button {
+    max-width: 30vw;
+    overflow-wrap: anywhere;
+    padding-inline: 0.65rem;
+    white-space: normal;
+  }
+
+  .word-cloud-item {
+    max-width: 30vw;
+  }
+
+  .cauldron-idle {
+    width: 90vw;
+    height: auto;
+    max-width: 90vw;
+    max-height: 58vh;
+  }
+
+  .word-cloud-item[data-slot="0"] { --slot-x: 18%; --slot-y: 22%; }
+  .word-cloud-item[data-slot="1"] { --slot-x: 50%; --slot-y: 22%; }
+  .word-cloud-item[data-slot="2"] { --slot-x: 82%; --slot-y: 22%; }
+  .word-cloud-item[data-slot="3"] { --slot-x: 18%; --slot-y: 72%; }
+  .word-cloud-item[data-slot="4"] { --slot-x: 50%; --slot-y: 72%; }
+  .word-cloud-item[data-slot="5"] { --slot-x: 82%; --slot-y: 72%; }
+}
+
 @keyframes float-chip {
   0%,
   100% {
@@ -112,11 +187,11 @@
 @keyframes cauldron-breathe {
   0%,
   100% {
-    transform: translate3d(-50%, 0, 0) scale(1);
+    transform: translate3d(0, 0, 0) scale(1);
     filter: saturate(1);
   }
   50% {
-    transform: translate3d(-50%, -4px, 0) scale(1.03);
+    transform: translate3d(0, -4px, 0) scale(1.03);
     filter: saturate(1.15);
   }
 }

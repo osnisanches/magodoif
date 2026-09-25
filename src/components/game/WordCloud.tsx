@@ -92,11 +92,11 @@ export function WordCloud({ words, levelSelect, disabled, onDrop, dropZoneRef }:
     <div className="pointer-events-none absolute inset-x-0 bottom-0 z-30 h-full">
       <div
         className="absolute inset-0 bg-center bg-cover opacity-40 mix-blend-screen"
-        style={{ backgroundImage: "url(/game/smoke.png)" }}
+        style={{ backgroundImage: `url(${import.meta.env.BASE_URL}game/smoke.png)` }}
         aria-hidden
       />
       <div className="absolute inset-0 bg-gradient-to-b from-bg/10 via-transparent to-bg/40" />
-      <div className="absolute left-[20%] right-[20%] top-16 bottom-[35%] sm:top-20">
+      <div className="word-cloud-field absolute left-[20%] right-[20%] top-16 bottom-[35%] sm:top-20">
         {words.map((word, i) => {
         if (gone.has(word.instanceId)) return null;
         const slot = slots[word.slot] ?? slots[i % slots.length];
@@ -104,7 +104,8 @@ export function WordCloud({ words, levelSelect, disabled, onDrop, dropZoneRef }:
         return (
           <div
             key={word.instanceId}
-            className="absolute"
+            className="word-cloud-item absolute"
+            data-slot={word.slot < slots.length ? word.slot : i % slots.length}
             style={
               dragging && drag
                 ? {
@@ -115,12 +116,7 @@ export function WordCloud({ words, levelSelect, disabled, onDrop, dropZoneRef }:
                     zIndex: 60,
                     transform: "none",
                   }
-                : {
-                    left: `${slot.x}%`,
-                    top: `${slot.y}%`,
-                    transform: "translate(-50%, -50%)",
-                    zIndex: 1,
-                  }
+                : { zIndex: 1 }
             }
           >
             <button

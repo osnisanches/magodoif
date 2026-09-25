@@ -19,6 +19,10 @@ A aplicação fica disponível em:
 http://localhost:8080
 ```
 
+## Ajustar palavras por curso
+
+Na tela inicial, abra **Painel da equipe** para cadastrar, ativar, desativar ou remover palavras e associá-las a um curso. Os ajustes ficam salvos no navegador atual; use **Exportar** e **Importar** para transferi-los entre navegadores.
+
 ## Como fazer deploy no GitHub Pages
 
 ```bash

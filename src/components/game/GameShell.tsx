@@ -10,10 +10,10 @@ import { TitleScreen } from "./TitleScreen";
 import { WordCloud } from "./WordCloud";
 
 interface Props {
-  showAdminLink?: boolean;
+  onOpenAdmin?: () => void;
 }
 
-export function GameShell({ showAdminLink = true }: Props) {
+export function GameShell({ onOpenAdmin }: Props) {
   const dropZoneRef = useRef<HTMLDivElement>(null);
   const phase = useGame((s) => s.phase);
   const cloud = useGame((s) => s.cloud);
@@ -110,7 +110,7 @@ export function GameShell({ showAdminLink = true }: Props) {
         </header>
       )}
 
-      {phase === "title" && <TitleScreen onStart={onStart} showAdminLink={showAdminLink} />}
+      {phase === "title" && <TitleScreen onStart={onStart} onOpenAdmin={onOpenAdmin} />}
       {phase === "brewing" && <PotionFinale onDone={finishBrew} />}
       {phase === "result" && result && (
         <ResultScreen result={result} ingredients={ingredients} onRestart={restart} />
@@ -120,7 +120,7 @@ export function GameShell({ showAdminLink = true }: Props) {
         <img
           src={`${import.meta.env.BASE_URL}game/logo.png`}
           alt="Selo do canal"
-          className="pointer-events-none absolute bottom-20 right-20 z-50 h-32 w-auto max-w-[8rem] object-contain sm:h-36 sm:max-w-[9rem]"
+          className="pointer-events-none absolute right-3 top-3 z-50 h-12 w-10 object-contain sm:bottom-20 sm:right-20 sm:top-auto sm:h-32 sm:w-auto sm:max-w-[8rem] lg:h-36 lg:max-w-[9rem]"
           draggable={false}
         />
       )}

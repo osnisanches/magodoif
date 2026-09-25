@@ -14,7 +14,11 @@ import { Badge } from "@/components/ui/badge";
 const selectClass =
   "h-11 w-full rounded-lg border border-border bg-surface px-3 text-sm text-fg outline-none focus-visible:ring-2 focus-visible:ring-primary/60";
 
-export function AdminPanel() {
+interface Props {
+  onBack?: () => void;
+}
+
+export function AdminPanel({ onBack }: Props) {
   const keywords = useGame((s) => s.keywords);
   const hydrate = useGame((s) => s.hydrate);
   const setKeywords = useGame((s) => s.setKeywords);
@@ -86,12 +90,19 @@ export function AdminPanel() {
               Cadastre palavras, vincule a um curso e o eixo é herdado automaticamente.
             </p>
           </div>
-          <Button asChild variant="secondary">
-            <Link to="/">
+          {onBack ? (
+            <Button type="button" variant="secondary" onClick={onBack}>
               <ArrowLeft />
               Voltar ao jogo
-            </Link>
-          </Button>
+            </Button>
+          ) : (
+            <Button asChild variant="secondary">
+              <Link to="/">
+                <ArrowLeft />
+                Voltar ao jogo
+              </Link>
+            </Button>
+          )}
         </div>
 
         <section className="rounded-xl border border-border bg-surface p-4 sm:p-5">
