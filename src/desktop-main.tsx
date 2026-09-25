@@ -11,6 +11,6 @@ if (!root) {
 
 createRoot(root).render(
   <StrictMode>
-    <GameShell />
+    <GameShell showAdminLink={false} />
   </StrictMode>,
 );

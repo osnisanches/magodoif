@@ -9,7 +9,11 @@ import { SceneStage } from "./SceneStage";
 import { TitleScreen } from "./TitleScreen";
 import { WordCloud } from "./WordCloud";
 
-export function GameShell() {
+interface Props {
+  showAdminLink?: boolean;
+}
+
+export function GameShell({ showAdminLink = true }: Props) {
   const dropZoneRef = useRef<HTMLDivElement>(null);
   const phase = useGame((s) => s.phase);
   const cloud = useGame((s) => s.cloud);
@@ -106,7 +110,7 @@ export function GameShell() {
         </header>
       )}
 
-      {phase === "title" && <TitleScreen onStart={onStart} />}
+      {phase === "title" && <TitleScreen onStart={onStart} showAdminLink={showAdminLink} />}
       {phase === "brewing" && <PotionFinale onDone={finishBrew} />}
       {phase === "result" && result && (
         <ResultScreen result={result} ingredients={ingredients} onRestart={restart} />
